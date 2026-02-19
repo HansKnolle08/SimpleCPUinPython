@@ -1,0 +1,14 @@
+LOAD 3 A ; Hallo wie gehts denn so
+LOAD 5 B
+LOAD 0 C
+LOAD 1 D
+
+ADD C A
+LOAD RES C
+
+SUB B D
+LOAD RES B
+
+JNZ 4
+
+PRINT C

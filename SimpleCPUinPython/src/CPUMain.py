@@ -1,3 +1,30 @@
+"""
+/SimpleCPUinPython/src/CPUMain.py
+
+A simple CPU emulator in Python with basic ALU and control flow instructions, 
+supporting debugging and step-by-step execution.
+
+MIT License
+
+Copyright (c) 2026 Hansisi
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
+
 from Helper import debug
 import os
 
@@ -36,6 +63,9 @@ class CPU:
             'JNC': self.instr_jnc,
             'PRINT': self.instr_print
         }
+
+        # Labels for jumps
+        self.labels: dict[str, int] = {}
 
     # -------- ALU INSTRUCTIONS --------
     def instr_add(self, instr):
@@ -133,10 +163,23 @@ class CPU:
         base_path = os.path.dirname(__file__)
         file_path = os.path.join(base_path, filename)
 
+        program = []
         with open(file_path, 'r') as f:
-            program = [line.strip() for line in f if line.strip()]
-        self.load_program(program)
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith(';'):
+                    continue
+                line = line.split(';', 1)[0].strip()
+                if not line:
+                    continue
 
+                if line.endswith(':'):
+                    label_name = line[:-1].strip()
+                    self.labels[label_name] = len(program)
+                else:
+                    program.append(line)
+
+        self.load_program(program)
 
     def step(self):
         instr = self.memory[self.pc]
@@ -145,7 +188,7 @@ class CPU:
         opcode = instr.split()[0]
         self.instr_reg[opcode](instr)
 
-    def run(self, debug_state: bool = True, max_steps: int = 100, sleep_time: int = 0):
+    def run(self, debug_state: bool = True, max_steps: int = 1000, sleep_time: int = 0):
         try:
             steps = 0
             while self.pc < len(self.memory):
