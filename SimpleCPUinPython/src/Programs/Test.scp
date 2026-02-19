@@ -1,0 +1,6 @@
+LOAD 3 A
+LOAD 5 B
+
+SUB B A
+
+PRINT RES
