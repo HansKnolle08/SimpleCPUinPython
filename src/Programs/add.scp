@@ -1,3 +1,6 @@
+; /SimpleCPUinPython/src/Programs/add.scp
+; This program adds the values of A and B and prints the result.
+
 LOAD 3 A
 LOAD 5 B
 

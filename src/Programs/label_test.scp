@@ -1,0 +1,11 @@
+; /SimpleCPUinPython/src/Programs/label_test.scp
+; This program tests the use of labels.
+
+LOAD 0 A
+LOAD 1 B
+
+loop:
+ADD A B
+LOAD RES A
+PRINT RES
+JMP loop

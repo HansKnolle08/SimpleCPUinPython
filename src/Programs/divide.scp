@@ -1,3 +1,6 @@
+; /SimpleCPUinPython/Programs/divide.scp
+; This program performs integer division of 10 by 5 using repeated subtraction.
+
 LOAD 10 A
 LOAD 5  B
 LOAD 0  C

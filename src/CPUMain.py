@@ -25,9 +25,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+###########
+# IMPORTS #
+###########
 from Helper import debug
 import os
 
+##################
+# CPU MAIN CLASS #
+##################
 class CPU:
     def __init__(self):
         # General-Purpose Registers
@@ -67,7 +73,11 @@ class CPU:
         # Labels for jumps
         self.labels: dict[str, int] = {}
 
-    # -------- ALU INSTRUCTIONS --------
+    ####################
+    # ALU INSTRUCTIONS #
+    ####################
+
+    # ADD Instruction: ADD reg1, reg2 -> reg_res = reg1 + reg2
     def instr_add(self, instr):
         _, reg1, reg2 = instr.split()
         val1 = getattr(self, f"reg_{reg1.lower()}")
@@ -78,6 +88,7 @@ class CPU:
         self.reg_res = result & 0xFF
         self.zero_flag = (self.reg_res == 0)
 
+    # SUB Instruction: SUB reg1, reg2 -> reg_res = reg1 - reg2
     def instr_sub(self, instr):
         _, reg1, reg2 = instr.split()
         val1 = getattr(self, f"reg_{reg1.lower()}")
@@ -88,6 +99,7 @@ class CPU:
         self.reg_res = result & 0xFF
         self.zero_flag = (self.reg_res == 0)
 
+    # MUL Instruction: MUL reg1, reg2 -> reg_res = reg1 * reg2
     def instr_mul(self, instr):
         _, reg1, reg2 = instr.split()
         val1 = getattr(self, f"reg_{reg1.lower()}")
@@ -98,6 +110,7 @@ class CPU:
         self.reg_res = result & 0xFF
         self.zero_flag = (self.reg_res == 0)
 
+    # DIV Instruction: DIV reg1, reg2 -> reg_res = reg1 // reg2
     def instr_div(self, instr):
         _, reg1, reg2 = instr.split()
         val1 = getattr(self, f"reg_{reg1.lower()}")
@@ -109,31 +122,55 @@ class CPU:
         self.reg_res = val1 // val2
         self.zero_flag = (self.reg_res == 0)
     
-    # -------- LOGIC INSTRUCTIONS --------
+    ######################
+    # LOGIC INSTRUCTIONS #
+    ######################
+
+    # JMP Instruction: JMP target -> PC = target
     def instr_jmp(self, instr):
         _, target = instr.split()
-        self.pc = int(target)
+        if target in self.labels:
+            self.pc = self.labels[target]
+        else:
+            self.pc = int(target)
 
+    # JZ Instruction: JZ target -> if zero_flag: PC = target
     def instr_jz(self, instr):
         _, target = instr.split()
         if self.zero_flag:
-            self.pc = int(target)
+            if target in self.labels:
+                self.pc = self.labels[target]
+            else:
+                self.pc = int(target)
 
+    # JNZ Instruction: JNZ target -> if not zero_flag: PC = target
     def instr_jnz(self, instr):
         _, target = instr.split()
         if not self.zero_flag:
-            self.pc = int(target)
+            if target in self.labels:
+                self.pc = self.labels[target]
+            else:
+                self.pc = int(target)
 
+    # JC Instruction: JC target -> if carry_flag: PC = target
     def instr_jc(self, instr):
         _, target = instr.split()
         if self.carry_flag:
-            self.pc = int(target)
+            if target in self.labels:
+                self.pc = self.labels[target]
+            else:
+                self.pc = int(target)
 
+    # JNC Instruction: JNC target -> if not carry_flag: PC = target
     def instr_jnc(self, instr):
         _, target = instr.split()
         if not self.carry_flag:
-            self.pc = int(target)
+            if target in self.labels:
+                self.pc = self.labels[target]
+            else:
+                self.pc = int(target)
 
+    # LOAD Instruction: LOAD value, target -> target = value (value can be immediate or register)
     def instr_load(self, instr):
         _, value, target = instr.split()
 
@@ -148,18 +185,24 @@ class CPU:
 
         setattr(self, target_reg, source_value)
 
+    # PRINT Instruction: PRINT reg -> prints the value of the specified register
     def instr_print(self, instr):
         _, flagged = instr.split()
         flagged_reg = f"reg_{flagged.lower()}"
         value = getattr(self, flagged_reg)
         print(f"{flagged_reg.upper()} = {value}")
 
-    # -------- EXECUTION --------
+    #############
+    # EXECUTION #
+    #############
+
+    # Load a program into memory
     def load_program(self, program):
         self.memory = program
         self.pc = 0
 
-    def load_program_from_file(self, filename: str):
+    # Load an assembly program from a file, parse it, and store it in memory
+    def asm_interpreter(self, filename: str):
         base_path = os.path.dirname(__file__)
         file_path = os.path.join(base_path, filename)
 
@@ -181,6 +224,7 @@ class CPU:
 
         self.load_program(program)
 
+    # Execute a single instruction
     def step(self):
         instr = self.memory[self.pc]
         self.pc += 1
@@ -188,6 +232,7 @@ class CPU:
         opcode = instr.split()[0]
         self.instr_reg[opcode](instr)
 
+    # Run the CPU until the end of the program or until max_steps is reached
     def run(self, debug_state: bool = True, max_steps: int = 1000, sleep_time: int = 0):
         try:
             steps = 0

@@ -1,0 +1,9 @@
+; /SimpleCPUinPython/Programs/sub.scp
+; This program performs subtraction of 5 from 3 and prints the result.
+
+LOAD 3 B
+LOAD 5 A
+
+SUB A B
+
+PRINT RES

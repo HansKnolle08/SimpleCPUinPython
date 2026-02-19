@@ -25,14 +25,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+###########
+# IMPORTS #
+###########
 from CPUMain import CPU
 
+########
+# MAIN #
+########
+
+# Main function to initialize and run an instance of the CPU emulator
 def main(debug_mode: bool = False):
     cpu = CPU()
 
-    cpu.load_program_from_file('Programs/add.scp')
+    cpu.asm_interpreter('Programs/label_test.scp')
 
     cpu.run(debug_mode, sleep_time=0.1)
 
+# Entry point for the script
 if __name__ == '__main__':
     main(True)
