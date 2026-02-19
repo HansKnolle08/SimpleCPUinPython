@@ -22,7 +22,7 @@ A lightweight CPU emulator written in Python that simulates basic processor oper
 from CPUMain import CPU
 
 cpu = CPU()
-cpu.load_program_from_file('Programs/add.scp')
+cpu.asm_interpreter('Programs/add.scp')
 cpu.run(debug_mode=True)
 ```
 
