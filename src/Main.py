@@ -29,6 +29,7 @@ SOFTWARE.
 # IMPORTS #
 ###########
 from CPUMain import CPU
+from ASMParser import ASMParser
 
 ########
 # MAIN #
@@ -37,11 +38,12 @@ from CPUMain import CPU
 # Main function to initialize and run an instance of the CPU emulator
 def main(debug_mode: bool = False):
     cpu = CPU()
-
-    cpu.asm_interpreter('Programs/label_test.scp')
-
-    cpu.run(debug_mode, sleep_time=0.1)
+    parser = ASMParser()
+    program, labels = parser.parse_file('Programs/label_test.scp')
+    cpu.labels = labels
+    cpu.load_program(program)
+    cpu.execute(debug_state=debug_mode)
 
 # Entry point for the script
 if __name__ == '__main__':
-    main(True)
+    main()

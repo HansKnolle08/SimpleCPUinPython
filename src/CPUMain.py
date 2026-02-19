@@ -201,29 +201,6 @@ class CPU:
         self.memory = program
         self.pc = 0
 
-    # Load an assembly program from a file, parse it, and store it in memory
-    def asm_interpreter(self, filename: str):
-        base_path = os.path.dirname(__file__)
-        file_path = os.path.join(base_path, filename)
-
-        program = []
-        with open(file_path, 'r') as f:
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith(';'):
-                    continue
-                line = line.split(';', 1)[0].strip()
-                if not line:
-                    continue
-
-                if line.endswith(':'):
-                    label_name = line[:-1].strip()
-                    self.labels[label_name] = len(program)
-                else:
-                    program.append(line)
-
-        self.load_program(program)
-
     # Execute a single instruction
     def step(self):
         instr = self.memory[self.pc]
@@ -233,7 +210,7 @@ class CPU:
         self.instr_reg[opcode](instr)
 
     # Run the CPU until the end of the program or until max_steps is reached
-    def run(self, debug_state: bool = True, max_steps: int = 1000, sleep_time: int = 0):
+    def execute(self, debug_state: bool = True, max_steps: int = 1000, sleep_time: int = 0):
         try:
             steps = 0
             while self.pc < len(self.memory):
