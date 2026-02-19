@@ -77,7 +77,7 @@ class CPU:
     # ALU INSTRUCTIONS #
     ####################
 
-    # ADD Instruction: ADD reg1, reg2 -> reg_res = reg1 + reg2
+    # ADD Instruction: ADD reg1 reg2 -> reg_res = reg1 + reg2
     def instr_add(self, instr):
         _, reg1, reg2 = instr.split()
         val1 = getattr(self, f"reg_{reg1.lower()}")
@@ -88,7 +88,7 @@ class CPU:
         self.reg_res = result & 0xFF
         self.zero_flag = (self.reg_res == 0)
 
-    # SUB Instruction: SUB reg1, reg2 -> reg_res = reg1 - reg2
+    # SUB Instruction: SUB reg1 reg2 -> reg_res = reg1 - reg2
     def instr_sub(self, instr):
         _, reg1, reg2 = instr.split()
         val1 = getattr(self, f"reg_{reg1.lower()}")
@@ -99,7 +99,7 @@ class CPU:
         self.reg_res = result & 0xFF
         self.zero_flag = (self.reg_res == 0)
 
-    # MUL Instruction: MUL reg1, reg2 -> reg_res = reg1 * reg2
+    # MUL Instruction: MUL reg1 reg2 -> reg_res = reg1 * reg2
     def instr_mul(self, instr):
         _, reg1, reg2 = instr.split()
         val1 = getattr(self, f"reg_{reg1.lower()}")
@@ -110,7 +110,7 @@ class CPU:
         self.reg_res = result & 0xFF
         self.zero_flag = (self.reg_res == 0)
 
-    # DIV Instruction: DIV reg1, reg2 -> reg_res = reg1 // reg2
+    # DIV Instruction: DIV reg1 reg2 -> reg_res = reg1 // reg2
     def instr_div(self, instr):
         _, reg1, reg2 = instr.split()
         val1 = getattr(self, f"reg_{reg1.lower()}")
@@ -170,7 +170,7 @@ class CPU:
             else:
                 self.pc = int(target)
 
-    # LOAD Instruction: LOAD value, target -> target = value (value can be immediate or register)
+    # LOAD Instruction: LOAD value target -> target = value (value can be immediate or register)
     def instr_load(self, instr):
         _, value, target = instr.split()
 
