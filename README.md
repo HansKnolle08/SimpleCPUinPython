@@ -20,10 +20,16 @@ A lightweight CPU emulator written in Python that simulates basic processor oper
 
 ```python
 from CPUMain import CPU
+from ASMParser import ASMParser
 
 cpu = CPU()
-cpu.asm_interpreter('Programs/add.scp')
-cpu.run(debug_mode=True)
+parser = ASMParser()
+
+program, labels = parser.parse_file('Programs/label_test.scp')
+
+cpu.labels = labels
+cpu.load_program(program)
+cpu.execute()
 ```
 
 ## Example Program
