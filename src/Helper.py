@@ -25,20 +25,75 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-###########
+#---------#
 # IMPORTS #
-###########
+#---------#
 from time import sleep
 import sys
 
-# Helper function to display the current state of the CPU for debugging purposes
-def _show_cpu_state(steps, reg_a, reg_b, reg_c, reg_d, reg_res, prog_cnt, carry_flag, zero_flag):
-    print(f"Step {steps}: A={reg_a} B={reg_b} C={reg_c} D={reg_d} RES={reg_res} PC={prog_cnt} CarryFlag={carry_flag} ZeroFlag={zero_flag}")
+# ------------------------#
+# CPU STATE VISUALIZATION #
+# ------------------------#
+def _show_cpu_state(steps, reg_a, reg_b, reg_c, reg_d, reg_res, pc, carry_flag, zero_flag):
+    print("=" * 60)
+    print(f"STEP: {steps}")
+    print("-" * 60)
+    print(
+        f"A: {reg_a:02X}  "
+        f"B: {reg_b:02X}  "
+        f"C: {reg_c:02X}  "
+        f"D: {reg_d:02X}  "
+        f"RES: {reg_res:02X}"
+    )
+    print(f"PC: {pc:02X}")
+    print(f"FLAGS -> CARRY: {int(carry_flag)} | ZERO: {int(zero_flag)}")
+    print("=" * 60)
 
-# Debug function to be called during CPU execution to show the current state and optionally stop after a certain number of steps
-def debug(steps, max_steps, sleep_time, reg_a, reg_b, reg_c, reg_d, reg_res, prog_cnt, carry_flag, zero_flag):
-    _show_cpu_state(steps, reg_a, reg_b, reg_c, reg_d, reg_res, prog_cnt, carry_flag, zero_flag)
+# -----------------------------#
+# RAM VISUALIZATION (HEX DUMP) #
+# -----------------------------#
+def _show_memory_state(ram):
+    print("RAM:")
+    print("-" * 60)
+    for i in range(0, len(ram), 16):
+        chunk = ram[i:i + 16]
+        hex_values = " ".join(f"{byte:02X}" for byte in chunk)
+        print(f"{i:02X} | {hex_values}")
+    print("-" * 60)
+
+# --------------------#
+# MAIN DEBUG FUNCTION #
+# --------------------#
+def debug(
+    steps,
+    max_steps,
+    sleep_time,
+    reg_a,
+    reg_b,
+    reg_c,
+    reg_d,
+    reg_res,
+    pc,
+    carry_flag,
+    zero_flag,
+    ram
+):
+    _show_cpu_state(
+        steps,
+        reg_a,
+        reg_b,
+        reg_c,
+        reg_d,
+        reg_res,
+        pc,
+        carry_flag,
+        zero_flag
+    )
+
+    _show_memory_state(ram)
+
     sleep(sleep_time)
+
     if steps >= max_steps:
-        print("Debug: Max steps reached, stopping run.")
+        print("DEBUG: Max steps reached. Stopping execution.")
         sys.exit(0)

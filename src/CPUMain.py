@@ -25,15 +25,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-###########
+#---------#
 # IMPORTS #
-###########
+#---------#
 from Helper import debug
-import os
 
-##################
+#----------------#
 # CPU MAIN CLASS #
-##################
+#----------------#
 class CPU:
     def __init__(self):
         # General-Purpose Registers
@@ -50,6 +49,7 @@ class CPU:
 
         # Memory
         self.memory: list[str] = []
+        self.ram: list[int] = [0] * 256
 
         # Flags
         self.carry_flag: bool = False
@@ -67,15 +67,18 @@ class CPU:
             'JNZ': self.instr_jnz,
             'JC': self.instr_jc,
             'JNC': self.instr_jnc,
-            'PRINT': self.instr_print
+            'STORE': self.instr_store,
+            'LOADM': self.instr_loadm,
+            'PRINT': self.instr_print,
+            'RESET': self.instr_reset_cpu
         }
 
         # Labels for jumps
         self.labels: dict[str, int] = {}
 
-    ####################
+    #------------------#
     # ALU INSTRUCTIONS #
-    ####################
+    #------------------#
 
     # ADD Instruction: ADD reg1 reg2 -> reg_res = reg1 + reg2
     def instr_add(self, instr):
@@ -122,9 +125,9 @@ class CPU:
         self.reg_res = val1 // val2
         self.zero_flag = (self.reg_res == 0)
     
-    ######################
+    #--------------------#
     # LOGIC INSTRUCTIONS #
-    ######################
+    #--------------------#
 
     # JMP Instruction: JMP target -> PC = target
     def instr_jmp(self, instr):
@@ -185,6 +188,29 @@ class CPU:
 
         setattr(self, target_reg, source_value)
 
+    # STORE Instruction: STORE reg address -> RAM[address] = reg
+    def instr_store(self, instr):
+        _, reg, address = instr.split()
+
+        reg_name = f"reg_{reg.lower()}"
+        if not hasattr(self, reg_name):
+            raise ValueError("Invalid register")
+
+        value = getattr(self, reg_name)
+        address = int(address)
+
+        self.ram[address] = value
+    
+    # LOADM Instruction: LOADM address target -> target = RAM[address]
+    def instr_loadm(self, instr):
+        _, adress, reg = instr.split()
+
+        addr = int(adress)
+        if not 0 <= addr < len(self.ram):
+            raise ValueError(f"Memory address {addr} out of bounds")
+        
+        setattr(self, f"reg_{reg.lower()}", self.ram[addr])
+
     # PRINT Instruction: PRINT reg -> prints the value of the specified register
     def instr_print(self, instr):
         _, flagged = instr.split()
@@ -192,9 +218,26 @@ class CPU:
         value = getattr(self, flagged_reg)
         print(f"{flagged_reg.upper()} = {value}")
 
-    #############
+    # RESET Instruction: RESET -> Resets the CPU state to initial values
+    def instr_reset_cpu(self, _):
+        self.reg_a = 0
+        self.reg_b = 0
+        self.reg_c = 0
+        self.reg_d = 0
+        self.reg_res = 0
+        self.pc = 0
+        self.carry_flag = False
+        self.zero_flag = False
+        self.memory = []
+        self.ram = [0] * 256
+        self.labels = {}
+
+        # Note for myself: Nex step is to specify what to reset via an optional argument. If no argument is given, reset everything. 
+        # If an argument is given, only reset the specified part (e.g. registers, flags, memory, etc.)
+
+    #-----------#
     # EXECUTION #
-    #############
+    #-----------#
 
     # Load a program into memory
     def load_program(self, program):
@@ -228,7 +271,8 @@ class CPU:
                         self.reg_res,
                         self.pc, 
                         self.carry_flag, 
-                        self.zero_flag
+                        self.zero_flag,
+                        self.ram
                     )
         except KeyboardInterrupt:
             print("Processing stopped by user")

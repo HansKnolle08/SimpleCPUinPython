@@ -1,0 +1,19 @@
+; /SimpleCPUinPython/src/Programs/ram.scp
+; This program tests the RAM functionality of the CPU emulator.
+
+LOAD 4 A
+LOAD 6 B
+
+ADD A B
+
+STORE RES 0
+
+LOADM 0 A
+
+ADD A B
+
+STORE RES 1
+
+PRINT RES
+
+RESET

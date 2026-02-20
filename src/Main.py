@@ -25,25 +25,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-###########
+#---------#
 # IMPORTS #
-###########
+#---------#
 from CPUMain import CPU
 from ASMParser import ASMParser
 
-########
+#------#
 # MAIN #
-########
+#------#
 
 # Main function to initialize and run an instance of the CPU emulator
-def main(debug_mode: bool = False):
+def main(debug_mode: bool = False, max_steps: int = 100, sleep_time: float = 0.5):
     cpu = CPU()
     parser = ASMParser()
-    program, labels = parser.parse_file('Programs/label_test.scp')
+    program, labels = parser.parse_file('Programs/ram.scp')
     cpu.labels = labels
     cpu.load_program(program)
-    cpu.execute(debug_state=debug_mode)
+    cpu.execute(debug_mode, max_steps, sleep_time)
 
 # Entry point for the script
 if __name__ == '__main__':
-    main()
+    main(True, sleep_time=1)
