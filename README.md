@@ -11,6 +11,7 @@ A lightweight CPU emulator written in Python that simulates basic processor oper
 - **ALU Instructions**: ADD, SUB, MUL, DIV
 - **Control Flow**: JMP, JZ, JNZ, JC, JNC (conditional jumps based on flags)
 - **Memory Operations**: LOAD and PRINT instructions
+- **RAM Functionality**: STORE/LOADM to interact with the RAM ([0] * 256)
 - **Status Flags**: Carry and Zero flags for conditional branching
 - **Debug Mode**: Step-by-step execution with real-time CPU state visualization
 - **Program Loading**: Load programs from `.scp` assembly files with label support
@@ -36,7 +37,7 @@ cpu.execute()
 ------------------
 
 ```assembly
-MOV 3 A
+LOAD 3 A
 LOAD 5 B
 ADD A B
 PRINT RES
@@ -55,7 +56,10 @@ PRINT RES
 | `JMP target` | Jump to address |
 | `JZ/JNZ target` | Jump if zero/not zero flag set |
 | `JC/JNC target` | Jump if carry/no carry flag set |
+| `STORE reg adress` | Stores Value of specified reg into specified memory adress |
+| `LOADM adress reg` | Loads Value of specified memory adress into specified reg |
 | `PRINT register` | Output register value |
+| `RESET` | Resets the CPU to initial clean state |
 
 ## License
 ----------
